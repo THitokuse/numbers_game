@@ -22,6 +22,10 @@
     check() {
       if (currentNum === parseInt(this.el.textContent, 10)) {
         this.el.classList.add('pressed');
+
+        if (currentNum === 20) {
+          clearTimeout(timeoutId);
+        }
         currentNum++;
       }
     }
@@ -52,12 +56,26 @@
     }
   }
 
+  function runTimer() {
+    const timer = document.getElementById('timer');
+    timer.textContent = ((Date.now() - startTime) / 1000).toFixed(2);
+
+    timeoutId = setTimeout(() => {
+      runTimer();
+    }, 10);
+  }
+
   const board = new Board();
 
   let currentNum = 1;
+  let startTime;
+  let timeoutId;
 
   const btn = document.getElementById('btn');
   btn.addEventListener('click', () => {
     board.activate();
+
+    startTime = Date.now();
+    runTimer();
   });
 }
