@@ -67,12 +67,16 @@
 
   const board = new Board();
 
-  let currentNum = 1;
+  let currentNum;
   let startTime;
   let timeoutId;
 
   const btn = document.getElementById('btn');
   btn.addEventListener('click', () => {
+    if (typeof timeoutId !== 'undefined') {
+      clearTimeout(timeoutId);
+    }
+    currentNum = 1;
     board.activate();
 
     startTime = Date.now();
