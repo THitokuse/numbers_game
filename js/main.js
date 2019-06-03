@@ -2,7 +2,8 @@
 
 {
   class Panel {
-    constructor() {
+    constructor(game) {
+      this.game = game;
       this.el = document.createElement('li');
       this.el.classList.add('pressed');
       this.el.addEventListener('click', () => {
@@ -20,22 +21,24 @@
     }
 
     check() {
-      if (currentNum === parseInt(this.el.textContent, 10)) {
+      if (this.game.getCurrentNum() === parseInt(this.el.textContent, 10)) {
         this.el.classList.add('pressed');
 
-        if (currentNum === 20) {
-          clearTimeout(timeoutId);
+        this.game.addCurrentNum();
+
+        if (this.game.getCurrentNum() === 21) {
+          clearTimeout(this.game.getTimeoutId());
         }
-        currentNum++;
       }
     }
   }
 
   class Board {
-    constructor() {
+    constructor(game) {
+      this.game = game;
       this.panels = [];
       for (let i = 0; i < 20; i++) {
-        this.panels.push(new Panel());
+        this.panels.push(new Panel(this.game));
       }
       this.setup();
     }
@@ -56,30 +59,50 @@
     }
   }
 
-  function runTimer() {
-    const timer = document.getElementById('timer');
-    timer.textContent = ((Date.now() - startTime) / 1000).toFixed(2);
+  class Game {
+    constructor() {
+      this.board = new Board(this);
 
-    timeoutId = setTimeout(() => {
-      runTimer();
-    }, 10);
+      this.currentNum = undefined;
+      this.startTime = undefined;
+      this.timeoutId = undefined;
+
+      const btn = document.getElementById('btn');
+      btn.addEventListener('click', () => {
+        this.start();
+      });
+    }
+
+    start() {
+      if (typeof this.timeoutId !== 'undefined') {
+        clearTimeout(this.timeoutId);
+      }
+      this.currentNum = 1;
+      this.board.activate();
+
+      this.startTime = Date.now();
+      this.runTimer();
+    }
+
+    runTimer() {
+      const timer = document.getElementById('timer');
+      timer.textContent = ((Date.now() - this.startTime) / 1000).toFixed(2);
+
+      this.timeoutId = setTimeout(() => {
+        this.runTimer();
+      }, 10);
+    }
+
+    addCurrentNum() {
+      this.currentNum++;
+    }
+    getCurrentNum() {
+      return this.currentNum;
+    }
+    getTimeoutId() {
+      return this.timeoutId;
+    }
   }
 
-  const board = new Board();
-
-  let currentNum;
-  let startTime;
-  let timeoutId;
-
-  const btn = document.getElementById('btn');
-  btn.addEventListener('click', () => {
-    if (typeof timeoutId !== 'undefined') {
-      clearTimeout(timeoutId);
-    }
-    currentNum = 1;
-    board.activate();
-
-    startTime = Date.now();
-    runTimer();
-  });
+  new Game();
 }
