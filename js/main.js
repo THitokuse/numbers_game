@@ -120,6 +120,13 @@
       return this.level;
     }
   }
+  function myfunc(challengeLevel) {
+    new Game(challengeLevel.value);
+  }
 
-  new Game(5);
+  // 難易度を取得
+  const challengeLevel = document.getElementById("challenge-level");
+  console.log("成功")
+
+  challengeLevel.addEventListener('change', myfunc(challengeLevel));
 }
